@@ -15,6 +15,7 @@ df['data_hora'] = pd.to_datetime(df['solicitacao_data'] + ' ' + df['solicitacao_
 df = df.sort_values('data_hora', ascending=True)
 
 df = df.rename(columns={'solicitacao_data': 'solicitacao_data_hora'})
+df = df.drop(['solicitacao_hora'], axis=1)
 
 # Excluir as linhas em que a coluna "rpa_codigo" tenha o valor "Não informada"
 df = df[df['rpa_codigo'] != 'Não informada']
