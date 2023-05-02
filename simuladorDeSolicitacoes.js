@@ -4,8 +4,7 @@ const fs = require('fs');
 
 const csvFilePath = 'dataset_tratado.csv'; // caminho para o arquivo CSV
 const rabbitMQUrl = 'amqp://localhost'; // brockerRabbitMQ - URL do servidor RabbitMQ
-const exchangeName = 'dados'; // nome da exchange RabbitMQ
-const routingKey = 'dados'; // routing key para as mensagens
+const queueName = 'dados'; // nome da queue RabbitMQ
 const delay = 10; // tempo de espera entre envio de mensagens (em milissegundos)
 let delayM =1;
 
@@ -21,14 +20,14 @@ amqp.connect(rabbitMQUrl, function(error0, connection) {
       throw error1;
     }
 
-    // Função que envia a mensagem para o broker
+    // Função que envia a mensagem para a fila
     function enviarMensagem(mensagem) {
       
       // Converte a mensagem em uma string JSON
       const message = JSON.stringify(mensagem);
 
-      // Envia a mensagem para o RabbitMQ
-      channel.publish(exchangeName, routingKey, Buffer.from(message));
+      // Envia a mensagem para a fila
+      channel.sendToQueue(queueName, Buffer.from(message));
       console.log("Mensagem enviada:", message);
 
     }
@@ -45,7 +44,7 @@ amqp.connect(rabbitMQUrl, function(error0, connection) {
         // Converte a linha em uma mensagem JSON
         const solicitacao = JSON.stringify(row);      
 
-        // Envia a mensagem para o broker
+        // Envia a mensagem para a fila
         setTimeout(() => enviarMensagem(solicitacao), delayM);// Aguarda o tempo de delay antes de enviar a próxima mensagem  
     })
 
@@ -58,3 +57,4 @@ amqp.connect(rabbitMQUrl, function(error0, connection) {
     });
   });
 });
+
